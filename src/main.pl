@@ -4,8 +4,12 @@ use warnings;
 use Template;
 use Text::Markdown qw(markdown);
 
-sub no_heading {
-	die("Markdown document must begin with a level 1 header.");
+sub no_intro {
+	die("The title must be followed by a level 3 header as intro.");
+}
+
+sub no_title {
+	die("Markdown document must begin with a level 2 header as title.");
 }
 
 if ($#ARGV != 0) {
@@ -17,39 +21,51 @@ open(my $post, "<", $ARGV[0]) or die("Cannot open \"$ARGV[0]\": $!\n");
 my @lines = <$post>;
 close($post);
 
-my $check = substr($lines[0], 0, 1);
-if ($check cmp "#") {
-	no_heading();
+my $check = substr($lines[0], 0, 2);
+if ($check cmp "##") {
+	no_title();
 }
 
-$check = substr($lines[0], 1, 1);
+$check = substr($lines[0], 2, 1);
 unless ($check cmp "#") {
-	no_heading();
+	no_title();
+}
+
+my $cnt = 0;
+$check = "";
+while ($check =~ /^\s*$/) {
+	$cnt++;
+	$check = $lines[$cnt];
+}
+
+$check = substr($lines[$cnt], 0, 3);
+if ($check cmp "###") {
+	no_intro();
+}
+
+$check = substr($lines[$cnt], 3, 1);
+unless ($check cmp "#") {
+	no_intro();
 }
 
 my $m = Text::Markdown->new;
-my @md;
+my $md = "";
 
 foreach (@lines) {
-	push(@md, $m->markdown($_));
+	$md = $md . "\t" . $m->markdown($_) . "\t";
 }
 
-my $md_str = "";
-foreach (@md) {
-	$md_str = $md_str . "\t" . $_ . "\t";
-}
-
+# Render the post
 my $post_vars = {
-	body => $md_str,
+	body => $md,
 };
 
 my @date = localtime();
 my $today = sprintf("%d%02d%02d", $date[5] + 1900, $date[4] + 1, $date[3]);
-
 my $found_path = 0;
 my $path = "";
 my $stamp = $today; 
-my $cnt = 0;
+$cnt = 1;
 until ($found_path) {
 	$path = "../site/posts/" . $stamp . ".html";
 	if (-e $path) {
@@ -60,7 +76,7 @@ until ($found_path) {
 	}
 }
 $path = $stamp . ".html";
-print($path);
+
 my $tt = Template->new({
 	INCLUDE_PATH => "../templates/",
 	INTERPOLATE => 1,
@@ -68,4 +84,3 @@ my $tt = Template->new({
 }) or die("$Template::ERROR\n");
 
 $tt->process("post.html", $post_vars, $path);
-
