@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use Text::Markdown qw(markdown);
 
 sub no_heading {
 	die("Markdown document must begin with a level 1 header.");
@@ -23,5 +24,12 @@ if ($check cmp "#") {
 $check = substr($lines[0], 1, 1);
 unless ($check cmp "#") {
 	no_heading();
+}
+
+my $m = Text::Markdown->new;
+my @md;
+
+foreach (@lines) {
+	push(@md, $m->markdown($_));
 }
 
