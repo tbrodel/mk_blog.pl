@@ -19,7 +19,7 @@ if ($#ARGV != 0) {
 	exit 1;
 }
 
-# Read outmarkdown document
+# Read in markdown document
 open(my $post, "<", $ARGV[0]) or die("Cannot open \"$ARGV[0]\": $!\n");
 my @lines = <$post>;
 close($post);
