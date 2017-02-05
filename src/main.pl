@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 sub no_heading {
-	die("Markdown doucment must begin with a level 1 header.");
+	die("Markdown document must begin with a level 1 header.");
 }
 
 if ($#ARGV != 0) {
