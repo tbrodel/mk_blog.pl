@@ -54,13 +54,11 @@ unless ($check cmp "#") {
 my $m = Text::Markdown->new;
 my $md = "";
 foreach (@lines) {
-	$md = $md . "\t" . $m->markdown($_) . "\t\t";
+	$md = $md . $m->markdown($_) . "\t\t";
 }
 
 # Find an appropriate filepath for the new post
-my $post_vars = {
-	content => $md,
-};
+my $vars = { content => $md, };
 my @date = localtime();
 my $today = sprintf("%d%02d%02d", $date[5] + 1900, $date[4] + 1, $date[3]);
 my $found_path = 0;
@@ -81,29 +79,42 @@ $path = $stamp . ".html";
 # Initialise the template engine and write out the new post
 my $tt = Template->new({
 	INCLUDE_PATH => "../templates/",
-	INTERPOLATE => 1,
+	INTERPOLATE => 0,
 	OUTPUT_PATH => "../site/posts/",
 }) or die("$Template::ERROR\n");
-$tt->process("post.html", $post_vars, $path);
+$tt->process("post.html", $vars, $path) or die("$tt->error()\n");
 
-# Get the filenames of the last 5 posts
-opendir(my $posts_dir, "../site/posts/") or die("Couldn't open directory: $!\n");
+# Get the filenames of all previous posts
+opendir(my $posts_dir, "../site/posts/") 
+	or die("Couldn't open directory: $!\n");
 my @posts = readdir($posts_dir);
 closedir($posts_dir);
-@posts = @posts[($#posts-5)..$#posts];
 
-
-# Populate arrays with titles and intros from last 5 posts
-my @titles;
-my @intros;
+# Populate array with titles and intros
+my @front_matter;
 foreach (@posts) {	
-	my $parser = HTML::TokeParser->new(
-		"../site/posts/" . $_) or die("$!\n");
-	$parser->get_tag("h2");
-	push(@titles, $parser->get_text("/h2"));
-	$parser->get_tag("h3");
-	push(@intros, $parser->get_text("/h3"));
+	unless ($_ eq "index.html" || $_ eq "." || $_ eq "..") {
+		print("$_\n");
+		my $parser = HTML::TokeParser->new(
+			"../site/posts/" . $_) or die("$!\n");
+		$parser->get_tag("h2");
+		my $title = $parser->get_text("/h2");
+		$parser->get_tag("h3");
+		my $intro = $parser->get_text("/h3");
+		push(@front_matter, 
+			{ title => $title, intro => $intro, href => $_, });
+	}
 }
-for ($cnt = 0; $cnt < $#titles; $cnt++) {
-	print("$titles[$cnt]: $intros[$cnt]\n");
+$vars = { content => \@front_matter, };
+
+# Write out post listing
+$tt->process("list.html", $vars, "index.html") 
+	or die("$tt->error()\n");
+
+# If possible truncate front page to a list of 5 posts, then write it out
+if ($#front_matter >= 4) {
+	@front_matter = @front_matter[($#front_matter-4)..$#front_matter];
+	$vars = { content => \@front_matter, };
 }
+$tt->process("front.html", $vars, "../index.html") 
+	or die("$tt->error()\n");
