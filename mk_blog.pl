@@ -83,7 +83,7 @@ my $path = "";
 my $stamp = $today; 
 $cnt = 1;
 unless (-d $ARGV[1] . "/posts") {
-	mkdir($ARGV[1] . "/posts");
+	mkdir($ARGV[1] . "/posts") or die("$!\n");
 }
 until ($found_path) {
 	$path = $ARGV[1] . "/posts/" . $stamp . ".html";
