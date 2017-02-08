@@ -11,7 +11,8 @@ Currently depends on the following perl modules:
 * [HTML::TokeParser](http://search.cpan.org/~gaas/HTML-Parser-3.72/lib/HTML/TokeParser.pm)
 * [Text::Markdown](http://search.cpan.org/~bobtfish/Text-Markdown-1.000031/lib/Text/Markdown.pm)
 
-And the makefile requires a BSD make, most Linux distributions package the NetBSD make as ```bmake```.
+And the makefile requires a BSD make, most Linux distributions package the 
+NetBSD make as ```bmake```.
 In the examples below you may need to substitue ```bmake``` for ```make```.
 
 ##Installation##
@@ -19,7 +20,8 @@ In the examples below you may need to substitue ```bmake``` for ```make```.
     $ make install
 
 By default the Makefile installs everything under ```/usr/local```. 
-You can change this by setting the ```PREFIX```, ```BINDIR``` and ```DATADIR``` environment variables: 
+You can change this by setting the ```PREFIX```, ```BINDIR``` and ```DATADIR```
+environment variables: 
 
     $ #Linux style (Everything under /usr)
     $ export PREFIX=/usr
@@ -32,7 +34,8 @@ You can change this by setting the ```PREFIX```, ```BINDIR``` and ```DATADIR``` 
 
     $ make deinstall
     
-If you set custom installation directories earlier you'll have to ensure they're still set for deinstallation to succeed.
+If you set custom installation directories earlier you'll have to ensure they're
+still set for deinstallation to succeed.
 
 ##Usage##
 This script can be used pretty easily with an existing website:
@@ -43,10 +46,14 @@ This script can be used pretty easily with an existing website:
     $ #Check that you're happy with the results before proceeding
     $ rsync -av ~/www/staging/ /var/www/htdocs/
 
-There are no themes supplied for this script, the templates look for css in a directory called ```static```.
+There are no themes supplied for this script, the templates look for css in a 
+directory called ```static```.
 E.g. in the above example css would go in ```~/www/staging/static/style.css```.
 
-The templates are almost plain html and you should be able to edit them with a reasonable degree of abandon.
+The templates are almost plain html and you should be able to edit them with a 
+reasonable degree of abandon.
 
 ##Limitations##
-Currently ```mk_blog.pl``` expects your markdown documents to begin with a level-two heading followed by a paragraph. Just the way I wanted it to work, no real reason for it otherwise.
+Currently ```mk_blog.pl``` expects your markdown documents to begin with a 
+level-two heading followed by a paragraph. 
+Just the way I wanted it to work, no real reason for it otherwise.
