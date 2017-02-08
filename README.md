@@ -21,3 +21,11 @@ This script can be used pretty easily with an existing website:
     $ mk_blog.pl ./post.md ~/www/staging/ /usr/local/share/templates/
     $ #Check that you're happy with the results before proceeding
     $ rsync -av ~/www/staging/ /var/www/htdocs/
+
+There are no themes supplied for this script, the templates look for css in a directory called ```static```.
+E.g. in the above example css would go in ```~/www/staging/static/style.css```.
+
+The templates are almost plain html and you should be able to edit them with a reasonable degree of abandon.
+
+##Limitations##
+Currently ```mk_blog.pl``` expects your markdown documents to begin with a level-two heading followed by a paragraph. Just the way I wanted it to work, no real reason for it otherwise.
