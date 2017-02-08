@@ -1,19 +1,40 @@
 #mk\_blog.pl#
-
 This is a project I'm using to familiarise myself with perl. It's an *extremely*
 minimal static blog generator that renders markdown documents and places my last
 five posts onto a landing page.
 
-If you find it useful that's great.
+Developed on and designed for OpenBSD. If you find it useful that's great.
 
+##Dependencies##
 Currently depends on the following perl modules:
 * [Template](http://search.cpan.org/~abw/Template-Toolkit-2.26/lib/Template.pm)
 * [HTML::TokeParser](http://search.cpan.org/~gaas/HTML-Parser-3.72/lib/HTML/TokeParser.pm)
 * [Text::Markdown](http://search.cpan.org/~bobtfish/Text-Markdown-1.000031/lib/Text/Markdown.pm)
 
+And the makefile requires a BSD make, most Linux distributions package the NetBSD make as ```bmake```.
+In the examples below you may need to substitue ```bmake``` for ```make```.
+
+##Installation##
+
+    $ make install
+
+By default the Makefile installs everything under ```/usr/local```. 
+You can change this by setting the ```PREFIX```, ```BINDIR``` and ```DATADIR``` environment variables: 
+
+    $ #Linux style (Everything under /usr)
+    $ export PREFIX=/usr
+    $ make install
+    $ #Or something more custom
+    $ make install BINDIR=$HOME/bin $DATADIR=~/.local/share
+    $ make install PREFIX=/opt/mk_blog
+    
+##Deinstallation##
+
+    $ make deinstall
+    
+If you set custom installation directories earlier you'll have to ensure they're still set for deinstallation to succeed.
 
 ##Usage##
-
 This script can be used pretty easily with an existing website:
     
     $ mkdir -p ~/www/staging
