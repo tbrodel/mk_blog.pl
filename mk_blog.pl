@@ -6,7 +6,7 @@ use Template;
 use Text::Markdown qw(markdown);
 
 sub no_intro {
-	die("The title must be followed by a level 3 header as intro.");
+	die("The title must not be followed by a second header.");
 }
 
 sub no_title {
@@ -43,27 +43,23 @@ close($post);
 
 # Check the first line is a title
 my $check = substr($lines[0], 0, 2);
-if ($check cmp "##") {
+unless ($check eq "##") {
 	no_title();
 }
 $check = substr($lines[0], 2, 1);
-unless ($check cmp "#") {
+if ($check eq "#") {
 	no_title();
 }
 
-# Check that the next non-blank line is an intro
+# Check that the next non-blank line is not another header
 my $cnt = 0;
 $check = "";
 while ($check =~ /^\s*$/) {
 	$cnt++;
 	$check = $lines[$cnt];
 }
-$check = substr($lines[$cnt], 0, 3);
-if ($check cmp "###") {
-	no_intro();
-}
-$check = substr($lines[$cnt], 3, 1);
-unless ($check cmp "#") {
+$check = substr($lines[$cnt], 0, 1);
+if ($check eq "#") {
 	no_intro();
 }
 
@@ -116,10 +112,14 @@ foreach (@posts) {
 	unless ($_ eq "index.html" || $_ eq "." || $_ eq "..") {
 		my $parser = HTML::TokeParser->new(
 			$ARGV[1] . "/posts/" . $_) or die("$!\n");
-		$parser->get_tag("h2");
-		my $title = $parser->get_text("/h2");
-		$parser->get_tag("h3");
-		my $intro = $parser->get_text("/h3");
+		my $tag = $parser->get_tag("h2");
+		my $title = ${$tag}[3] . $parser->get_text("/h2");
+		$tag = $parser->get_tag("/h2");
+		$title = $title . ${$tag}[1];
+		$tag = $parser->get_tag("p");
+		my $intro = ${$tag}[3] . $parser->get_text("/p");
+		$tag = $parser->get_tag("/p");
+		$intro = $intro . ${$tag}[1];		
 		push(@front_matter, 
 			{ title => $title, intro => $intro, href => $_, });
 	}
